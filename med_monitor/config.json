@@ -1,0 +1,13 @@
+{
+  "patient_name": "Grandma",
+  "thingspeak_channel_id": "YOUR_CHANNEL_ID",
+  "thingspeak_read_api_key": "YOUR_READ_API_KEY",
+  "firebase_credentials": "serviceAccountKey.json",
+  "alert_minimum_level": "WARNING",
+  "check_interval_minutes": 60,
+  "expected_dose_time": "08:00",
+  "drift_warning_minutes": 30,
+  "drift_high_minutes": 60,
+  "anomaly_window_days": 7,
+  "min_hold_duration_seconds": 5
+}

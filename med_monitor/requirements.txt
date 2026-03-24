@@ -1,0 +1,18 @@
+# Preemptive Medication Adherence Monitor
+# Python dependencies
+#
+# Install all at once:
+#   pip install -r requirements.txt
+
+# Firebase (Firestore + FCM push notifications)
+firebase-admin==6.4.0
+
+# HTTP requests (ThingSpeak API calls)
+requests==2.31.0
+
+# ML anomaly detection (optional but recommended)
+scikit-learn==1.4.0
+numpy==1.26.4
+
+# If scikit-learn install fails on your machine:
+#   pip install scikit-learn --only-binary=:all:

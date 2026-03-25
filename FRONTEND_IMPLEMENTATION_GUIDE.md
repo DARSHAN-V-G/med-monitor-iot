@@ -70,7 +70,22 @@ To pair a new RFID tag without manually typing IDs:
 4.  The backend returns the `tag_uid`.
 5.  App populates the registration form with this ID.
 
-### W3: Push Notifications (FCM)
+### W3: "Register Medicine" (API Call)
+To save the new medicine to the system:
+1.  App calls `HTTP POST http://<BACKEND_IP>:5000/add-medicine`.
+2.  **Payload**:
+    ```json
+    {
+      "medicine_id": "medicine_002",
+      "name": "Night Tablet",
+      "tag_uid": "A3:B7:C2:D1",
+      "expected_time": "20:00",
+      "frequency": "daily"
+    }
+    ```
+3.  **Response**: `{"status": "success", "message": "Medicine registration complete."}`
+
+### W4: Push Notifications (FCM)
 The app should subscribe to the **`family_alerts`** topic.
 - Show a high-priority system notification if a `WARNING` or `HIGH` alert is received.
 - Deep-link the notification directly to that specific medicine's detail page.

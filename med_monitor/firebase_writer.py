@@ -160,6 +160,26 @@ def send_push(medicine_name: str, risk_level: str, credentials_path: str = "serv
         print("  Make sure FCM is enabled in Firebase Console.")
 
 
+def register_medicine(medicine_id: str, name: str, tag_uid: str, expected_time: str, frequency: str = "daily", credentials_path: str = "serviceAccountKey.json"):
+    """
+    Registers a new medicine in Firestore.
+    Called by the Flask API when the user adds a new bottle.
+    """
+    _init_firebase(credentials_path)
+    db = firestore.client()
+
+    doc_data = {
+        "name":          name,
+        "tag_uid":       tag_uid,
+        "expected_time": expected_time,
+        "frequency":     frequency,
+        "added_on":      firestore.SERVER_TIMESTAMP
+    }
+
+    db.collection("medicines").document(medicine_id).set(doc_data)
+    print(f"Registered new medicine: {name} ({medicine_id}) → Firestore")
+
+
 def seed_test_medicine(credentials_path: str = "serviceAccountKey.json"):
     """
     Seeds a test medicine document so you can test without the Flutter app.

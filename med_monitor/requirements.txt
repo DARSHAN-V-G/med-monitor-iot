@@ -14,5 +14,6 @@ requests==2.31.0
 scikit-learn==1.4.0
 numpy==1.26.4
 
-# If scikit-learn install fails on your machine:
-#   pip install scikit-learn --only-binary=:all:
+# Flask API (for mobile app integration)
+flask==3.0.2
+flask-cors==4.0.0

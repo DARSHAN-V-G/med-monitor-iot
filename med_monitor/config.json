@@ -9,5 +9,6 @@
   "drift_warning_minutes": 30,
   "drift_high_minutes": 60,
   "anomaly_window_days": 7,
-  "min_hold_duration_seconds": 5
+  "min_hold_duration_seconds": 5,
+  "api_key": "YOUR_SECRET_API_KEY"
 }

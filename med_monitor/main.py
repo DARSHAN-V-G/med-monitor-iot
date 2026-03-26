@@ -52,68 +52,77 @@ def run_pipeline(cfg: dict, test_mode: bool = False):
     print(f"  Mode: {'TEST (simulated data)' if test_mode else 'LIVE (ThingSpeak)'}")
     print(f"{'='*55}\n")
 
-    # ── Step 1: Get scan data ─────────────────────────────────────────────────
+    creds_path = cfg.get("firebase_credentials", "serviceAccountKey.json")
+    from firebase_writer import save_risk_result, send_push, get_medicines
+
+    # ── Step 1: Get data + medicine mapping ───────────────────────────────────
     if test_mode:
-        from simulate_data import generate_scans
         print("Loading simulated scan data...")
-        scans = load_simulated_scans()
-        print(f"Loaded {len(scans)} simulated events.\n")
+        all_scans = load_simulated_scans()
+        # Mock medicine mapping for test mode
+        medicines = {
+            "medicine_001": {"name": cfg.get("patient_name", "Patient"), "tag_uid": "A3:B7:C2:D1"}
+        }
     else:
+        # Fetch actual medicine registry from Firestore
+        medicines = get_medicines(credentials_path=creds_path)
+        if not medicines:
+            print("[WARN] No medicines found in Firestore. Check your configuration.")
+            return
+
         from thingspeak_fetcher import fetch_scans
         channel_id = cfg.get("thingspeak_channel_id", "")
         api_key    = cfg.get("thingspeak_read_api_key", "")
-        scans      = fetch_scans(channel_id, api_key, days=30)
+        all_scans  = fetch_scans(channel_id, api_key, days=60)
 
-        if not scans:
+        if not all_scans:
             print("[WARN] No ThingSpeak data. Falling back to simulated data.")
-            scans = load_simulated_scans()
+            all_scans = load_simulated_scans()
 
-    # ── Step 2: Run ML analysis ───────────────────────────────────────────────
+    # ── Step 2: Loop through each medicine and analyze ────────────────────────
     from analyzer import run_analysis
-    result = run_analysis(scans, config=cfg)
+    
+    for med_id, med_info in medicines.items():
+        med_name = med_info.get("name", "Unknown")
+        tag_uid  = med_info.get("tag_uid", "")
+        
+        print(f"\n--- Analyzing: {med_name} ({med_id}) ---")
+        
+        # Filter scans for this specific medicine's tag
+        med_scans = [s for s in all_scans if s.get("tag_uid") == tag_uid]
+        
+        if not med_scans:
+            print(f"  [SKIP] No scan data found for tag {tag_uid}.")
+            continue
 
-    if result is None:
-        print("[WARN] Analysis returned no result. Not enough data yet.")
-        return
+        result = run_analysis(med_scans, config=cfg)
 
-    # ── Step 3: Check alert threshold ────────────────────────────────────────
-    min_level    = cfg.get("alert_minimum_level", "WARNING")
-    levels       = ["LOW", "WARNING", "HIGH"]
-    result_level = result.get("risk_level", "LOW")
+        if result is None:
+            print(f"  [WARN] Not enough data for {med_name} yet.")
+            continue
 
-    should_alert = (
-        levels.index(result_level) >= levels.index(min_level)
-    )
+        # ── Step 3: Risk Assessment + Output ──────────────────────────────────
+        min_level    = cfg.get("alert_minimum_level", "WARNING")
+        levels       = ["LOW", "WARNING", "HIGH"]
+        result_level = result.get("risk_level", "LOW")
+        should_alert = levels.index(result_level) >= levels.index(min_level)
 
-    # ── Step 4: Save + notify (skip in test mode) ─────────────────────────────
-    if test_mode:
-        print("\n[TEST MODE] Skipping Firebase write and push notification.")
-        print("  In live mode this result would be saved to Firestore.\n")
-    else:
-        creds_path = cfg.get("firebase_credentials", "serviceAccountKey.json")
-
-        from firebase_writer import save_risk_result, send_push
-        save_risk_result("medicine_001", result, credentials_path=creds_path)
-
-        if should_alert:
-            patient_name = cfg.get("patient_name", "Patient")
-            send_push(patient_name, result_level, credentials_path=creds_path)
+        if test_mode:
+            print(f"  [TEST] Risk level: {result_level}. Skipping Firebase save.")
         else:
-            print(f"Risk is {result_level} — below threshold. No alert sent.")
+            save_risk_result(med_id, result, credentials_path=creds_path)
 
-    # ── Step 5: Print summary ─────────────────────────────────────────────────
-    print("\n── Pipeline Summary ────────────────────────────────────────")
-    print(f"  Patient          : {cfg.get('patient_name', 'Unknown')}")
-    print(f"  Risk level       : {result['risk_level']}")
-    print(f"  Risk score       : {result['risk_score']}")
-    print(f"  Drift per day    : {result['drift_minutes_per_day']} min")
-    print(f"  Last dose        : {result['last_dose_time']} on {result['last_dose_date']}")
-    print(f"  Tomorrow pred.   : {result['predicted_tomorrow_time']}")
-    print(f"  Days tracked     : {result['total_days_tracked']}")
-    print(f"  Detection method : {result['ml_method']}")
-    print("────────────────────────────────────────────────────────────\n")
+            if should_alert:
+                send_push(med_name, result_level, credentials_path=creds_path)
+            else:
+                print(f"  Risk is {result_level} — below threshold. No alert sent.")
 
-    return result
+        # ── Step 4: Print Summary ─────────────────────────────────────────────
+        print(f"  Result: {result_level} (Score={result['risk_score']})")
+        print(f"  Drift: {result['drift_minutes_per_day']} min/day")
+        print(f"  Prediction: {result['predicted_tomorrow_time']}")
+
+    return True
 
 
 def main():

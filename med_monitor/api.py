@@ -17,6 +17,14 @@ logger = logging.getLogger(__name__)
 # Load config once on startup
 cfg = load_config()
 
+def check_auth():
+    """Simple API Key check for security"""
+    expected = cfg.get("api_key", "YOUR_SECRET_API_KEY")
+    provided = request.headers.get("X-API-Key")
+    if provided != expected:
+        return jsonify({"status": "error", "message": "Unauthorized"}), 401
+    return None
+
 @app.route("/", methods=["GET"])
 def health_check():
     return jsonify({"status": "running", "service": "Med Monitor API"})
@@ -27,6 +35,8 @@ def detect_tag():
     Fetches the most recent RFID tag UID scanned.
     Used by the 'Learn Tag' feature in the mobile app.
     """
+    auth_error = check_auth()
+    if auth_error: return auth_error
     channel_id = cfg.get("thingspeak_channel_id")
     api_key    = cfg.get("thingspeak_read_api_key")
 
@@ -50,6 +60,9 @@ def add_medicine():
     Registers a new medicine in Firestore.
     Expects JSON: {medicine_id, name, tag_uid, expected_time, frequency}
     """
+    auth_error = check_auth()
+    if auth_error: return auth_error
+
     data = request.json
     if not data:
         return jsonify({"status": "error", "message": "Missing JSON body"}), 400

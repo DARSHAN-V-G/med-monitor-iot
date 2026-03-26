@@ -7,7 +7,7 @@ __pycache__/
 *.pyc
 *.pyo
 .env
-
+serviceAccountKey.json
 # VS Code
 .vscode/
 

@@ -24,7 +24,7 @@ from datetime import datetime, timedelta
 THINGSPEAK_BASE = "https://api.thingspeak.com"
 
 
-def fetch_scans(channel_id: str, api_key: str, days: int = 30) -> list:
+def fetch_scans(channel_id: str, api_key: str, days: int = 60) -> list:
     """
     Fetches scan entries from ThingSpeak for the past N days.
 

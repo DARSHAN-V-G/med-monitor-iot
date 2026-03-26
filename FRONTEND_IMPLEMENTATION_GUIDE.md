@@ -65,15 +65,17 @@ The main screen should show a big "Glassmorphic" card with the current Risk Leve
 ### W2: "Learn New Bottle" (API Call)
 To pair a new RFID tag without manually typing IDs:
 1.  User clicks **"Detect Tag"** in the app.
-2.  App calls `HTTP GET http://<BACKEND_IP>:5000/detect-tag`.
-3.  User scans the bottle on the physical RFID reader.
-4.  The backend returns the `tag_uid`.
-5.  App populates the registration form with this ID.
+2.  **Required Header**: `X-API-Key: <YOUR_SECRET_API_KEY>`
+3.  App calls `HTTP GET http://<BACKEND_IP>:5000/detect-tag`.
+4.  User scans the bottle on the physical RFID reader.
+5.  The backend returns the `tag_uid`.
+6.  App populates the registration form with this ID.
 
 ### W3: "Register Medicine" (API Call)
 To save the new medicine to the system:
 1.  App calls `HTTP POST http://<BACKEND_IP>:5000/add-medicine`.
-2.  **Payload**:
+2.  **Required Header**: `X-API-Key: <YOUR_SECRET_API_KEY>`
+3.  **Payload**:
     ```json
     {
       "medicine_id": "medicine_002",

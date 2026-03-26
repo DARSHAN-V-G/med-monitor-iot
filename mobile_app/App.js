@@ -21,6 +21,18 @@ import {
   User
 } from 'lucide-react-native';
 
+// --- Firebase Imports ---
+import { db } from './src/services/firebaseConfig';
+import { 
+  doc, 
+  onSnapshot, 
+  collection, 
+  query, 
+  orderBy, 
+  limit 
+} from "firebase/firestore";
+
+
 const { width } = Dimensions.get('window');
 
 // --- Theme Config ---
@@ -52,6 +64,51 @@ const MOCK_HISTORY = [
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  
+  // Real-time State
+  const [riskStatus, setRiskStatus] = useState(MOCK_STATUS);
+  const [history, setHistory] = useState(MOCK_HISTORY);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // 1. Listen for Risk Status (medicine_001)
+  useEffect(() => {
+    const docRef = doc(db, "risk_results", "medicine_001");
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        setRiskStatus(docSnap.data());
+      }
+      setIsLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // 2. Listen for Scan History (Last 10 events)
+  useEffect(() => {
+    const q = query(
+      collection(db, "scan_history"), 
+      orderBy("logged_at", "desc"), 
+      limit(10)
+    );
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const scans = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        // Format for UI
+        scans.push({
+          id: doc.id,
+          time: data.timestamp ? data.timestamp.split('T')[1]?.substring(0, 5) : 'N/A',
+          date: data.timestamp ? data.timestamp.split('T')[0] : 'N/A',
+          status: data.event === 'absent' ? 'Detected' : 'Missing',
+          color: data.event === 'absent' ? COLORS.success : COLORS.warning
+        });
+      });
+      if (scans.length > 0) setHistory(scans);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -73,9 +130,9 @@ export default function App() {
         {/* Risk Status Card (Glassmorphic) */}
         <View style={styles.glassCard}>
           <View style={styles.row}>
-            <View style={[styles.statusBadge, { backgroundColor: COLORS.danger + '22' }]}>
-              <AlertCircle size={16} color={COLORS.danger} />
-              <Text style={[styles.statusText, { color: COLORS.danger }]}>{MOCK_STATUS.risk_level} RISK</Text>
+            <View style={[styles.statusBadge, { backgroundColor: (riskStatus.risk_level === 'HIGH' ? COLORS.danger : COLORS.success) + '22' }]}>
+              <AlertCircle size={16} color={riskStatus.risk_level === 'HIGH' ? COLORS.danger : COLORS.success} />
+              <Text style={[styles.statusText, { color: riskStatus.risk_level === 'HIGH' ? COLORS.danger : COLORS.success }]}>{riskStatus.risk_level} RISK</Text>
             </View>
             <TouchableOpacity style={styles.refreshBtn}>
               <RefreshCcw size={16} color={COLORS.primary} />
@@ -84,9 +141,12 @@ export default function App() {
 
           <View style={styles.scoreContainer}>
             <Text style={styles.scoreLabel}>Adherence Score</Text>
-            <Text style={styles.scoreValue}>{MOCK_STATUS.risk_score}</Text>
+            <Text style={styles.scoreValue}>{riskStatus.risk_score}</Text>
             <View style={styles.progressBarBg}>
-              <View style={[styles.progressBarFill, { width: '40%', backgroundColor: COLORS.danger }]} />
+              <View style={[styles.progressBarFill, { 
+                width: `${Math.min(riskStatus.risk_score * 10, 100)}%`, 
+                backgroundColor: riskStatus.risk_score > 3 ? COLORS.danger : COLORS.success 
+              }]} />
             </View>
           </View>
 
@@ -94,17 +154,17 @@ export default function App() {
             <View style={styles.metricItem}>
               <Clock size={20} color={COLORS.textMuted} />
               <Text style={styles.metricLabel}>Last Dose</Text>
-              <Text style={styles.metricValue}>{MOCK_STATUS.last_dose}</Text>
+              <Text style={styles.metricValue}>{riskStatus.last_dose || 'N/A'}</Text>
             </View>
             <View style={styles.metricItem}>
               <Calendar size={20} color={COLORS.textMuted} />
               <Text style={styles.metricLabel}>Predicted</Text>
-              <Text style={styles.metricValue}>{MOCK_STATUS.predicted}</Text>
+              <Text style={styles.metricValue}>{riskStatus.predicted || 'N/A'}</Text>
             </View>
             <View style={styles.metricItem}>
               <Activity size={20} color={COLORS.textMuted} />
-              <Text style={styles.metricLabel}>Daily Drift</Text>
-              <Text style={styles.metricValue}>{MOCK_STATUS.drift}</Text>
+              <Text style={styles.metricLabel}>Drift</Text>
+              <Text style={styles.metricValue}>{riskStatus.drift ? `+${riskStatus.drift}m` : 'Stable'}</Text>
             </View>
           </View>
         </View>
@@ -123,7 +183,7 @@ export default function App() {
           </TouchableOpacity>
         </View>
 
-        {MOCK_HISTORY.map((item) => (
+        {history.map((item) => (
           <View key={item.id} style={styles.historyCard}>
             <View style={[styles.historyIndicator, { backgroundColor: item.color }]} />
             <View style={styles.historyInfo}>

@@ -8,6 +8,7 @@ __pycache__/
 *.pyo
 .env
 serviceAccountKey.json
+google-services.json
 # VS Code
 .vscode/
 

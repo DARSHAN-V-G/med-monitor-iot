@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "562308828182",
+    "project_id": "med-monitor-iot",
+    "storage_bucket": "med-monitor-iot.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:562308828182:android:77d25e038f279a62903937",
+        "android_client_info": {
+          "package_name": "com.iot.medmonitor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApG9VHknwZvajUM4UeTV4TKAua4zNyoX0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

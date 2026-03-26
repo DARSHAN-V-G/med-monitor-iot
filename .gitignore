@@ -1,5 +1,4 @@
 # IMPORTANT: Never commit these files to GitHub
-serviceAccountKey.json
 *.json.backup
 
 # Python cache
@@ -7,10 +6,8 @@ __pycache__/
 *.pyc
 *.pyo
 .env
-serviceAccountKey.json
-google-services.json
+
 # VS Code
 .vscode/
 
-# Generated data (optional to ignore)
-simulated_scans.json
+

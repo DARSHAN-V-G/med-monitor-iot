@@ -1,0 +1,212 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Med Monitor - Firebase Data Dashboard</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                padding: 20px;
+            }
+            
+            .container {
+                max-width: 1400px;
+                margin: 0 auto;
+            }
+            
+            header {
+                background: white;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                margin-bottom: 30px;
+            }
+            
+            header h1 {
+                color: #333;
+                margin-bottom: 10px;
+                font-size: 2.5em;
+            }
+            
+            header p {
+                color: #666;
+                font-size: 1.1em;
+            }
+            
+            .timestamp {
+                color: #999;
+                font-size: 0.9em;
+                margin-top: 10px;
+            }
+            
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 20px;
+                margin-bottom: 30px;
+            }
+            
+            .stat-card {
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                text-align: center;
+            }
+            
+            .stat-card h3 {
+                color: #666;
+                font-size: 0.95em;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin-bottom: 15px;
+            }
+            
+            .stat-value {
+                font-size: 2.5em;
+                font-weight: bold;
+                color: #667eea;
+            }
+            
+            .stat-value.danger {
+                color: #ef4444;
+            }
+            
+            .stat-value.success {
+                color: #22c55e;
+            }
+            
+            .data-section {
+                background: white;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                margin-bottom: 30px;
+            }
+            
+            .data-section h2 {
+                color: #333;
+                margin-bottom: 20px;
+                font-size: 1.8em;
+                border-bottom: 3px solid #667eea;
+                padding-bottom: 10px;
+            }
+            
+            .chart-container {
+                position: relative;
+                height: 400px;
+                margin-bottom: 30px;
+            }
+            
+            .data-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+            
+            .data-table thead {
+                background: #667eea;
+                color: white;
+            }
+            
+            .data-table th {
+                padding: 15px;
+                text-align: left;
+                font-weight: 600;
+            }
+            
+            .data-table td {
+                padding: 12px 15px;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .data-table tbody tr:hover {
+                background: #f5f5f5;
+            }
+            
+            .data-table tbody tr:nth-child(even) {
+                background: #f9f9f9;
+            }
+            
+            footer {
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                text-align: center;
+                color: #666;
+                margin-top: 30px;
+            }
+            
+            .no-data {
+                padding: 40px;
+                text-align: center;
+                color: #999;
+                font-size: 1.1em;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <header>
+                <h1>Med Monitor - Firebase Dashboard</h1>
+                <p>Real-time medication adherence monitoring system</p>
+            </header>
+            
+            <div class="stats-grid">
+                
+        <div class="stat-card">
+            <h3>Total Medicines Monitored</h3>
+            <p class="stat-value">1</p>
+        </div>
+        <div class="stat-card">
+            <h3>High Risk Count</h3>
+            <p class="stat-value danger">0</p>
+        </div>
+        <div class="stat-card">
+            <h3>Low Risk Count</h3>
+            <p class="stat-value success">1</p>
+        </div>
+        <div class="stat-card">
+            <h3>Average Adherence Score</h3>
+            <p class="stat-value">2.50</p>
+        </div>
+        
+                
+    <div class="stat-card">
+        <h3>Total Scans</h3>
+        <p class="stat-value">225</p>
+    </div>
+    
+            </div>
+            
+            <!-- Risk Results Section -->
+            <div class="data-section">
+                <h2>Risk Results</h2>
+                <table class='data-table'><thead><tr><th>drift</th><th>risk_score</th><th>predicted</th><th>last_dose</th><th>risk_level</th><th>updated_at</th><th>medicine_id</th></tr></thead><tbody><tr><td>5.2</td><td>2.5</td><td>08:20 AM</td><td>08:15 AM</td><td>LOW</td><td>2026-03-27 07:55:13.247000+00:00</td><td>medicine_001</td></tr></tbody></table>
+            </div>
+            
+            <!-- Scan History Section -->
+            <div class="data-section">
+                <h2>Scan History (Last 50 Records)</h2>
+                <table class='data-table'><thead><tr><th>event</th><th>tag_uid</th><th>logged_at</th><th>timestamp</th><th>scan_id</th></tr></thead><tbody><tr><td>absent</td><td>A3:B7:C2:D1</td><td>2026-03-27 13:25:09.770632+00:00</td><td>2026-03-27T13:25:09.770632</td><td>uIngWyhuLioi8XEos7OD</td></tr><tr><td>absent</td><td>A3:B7:C2:D1</td><td>2026-03-27 13:23:37.005764+00:00</td><td>2026-03-27T13:23:37.005764</td><td>XAxvRV4mSrG7QojLQrhe</td></tr><tr><td>absent</td><td>A3:B7:C2:D1</td><td>2026-03-27 13:23:30.566408+00:00</td><td>2026-03-27T13:23:30.566408</td><td>vcnvQz6TAuZ2ajr7j1kF</td></tr><tr><td>absent</td><td>A3:B7:C2:D1</td><td>2026-03-27 13:22:56.030513+00:00</td><td>2026-03-27T13:22:56.030513</td><td>EUO6SCtU29m0WgjZePXN</td></tr><tr><td>absent</td><td>A3:B7:C2:D1</td><td>2026-03-27 13:21:59.145201+00:00</td><td>2026-03-27T13:21:59.145201</td><td>U6gW8H78bxhH4zjV6kKe</td></tr><tr><td>absent</td><td>A3:B7:C2:D1</td><td>2026-03-27 13:21:39.512405+00:00</td><td>2026-03-27T13:21:39.512405</td><td>voR74z4Tqzs0yAKBnUjn</td></tr><tr><td>absent</td><td>A3:B7:C2:D1</td><td>2026-03-27 13:20:18.792683+00:00</td><td>2026-03-27T13:20:18.792683</td><td>3cBmWIfoGhl3pqgzCkyR</td></tr><tr><td>absent</td><td>A3:B7:C2:D1</td><td>2026-03-27 13:20:06.330489+00:00</td><td>2026-03-27T13:20:06.330489</td><td>eUFhVTBHprcyTntPqFxS</td></tr><tr><td>absent</td><td>A3:B7:C2:D1</td><td>2026-03-27 13:19:00.899813+00:00</td><td>2026-03-27T13:19:00.899813</td><td>Ij6hzL0VWMJ6aE1r2DYF</td></tr><tr><td>present</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:36.196000+00:00</td><td>2026-03-27T14:07:36.384635</td><td>lfaNYOkK8oqDNJXleqHL</td></tr><tr><td>absent</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:36.101000+00:00</td><td>2026-03-27T14:07:36.292779</td><td>c5zZwySzRhq8WiF77Q8S</td></tr><tr><td>present</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:35.922000+00:00</td><td>2026-03-27T14:07:36.114912</td><td>BYGBhJi8F1JNcmuCQjPU</td></tr><tr><td>absent</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:35.832000+00:00</td><td>2026-03-27T14:07:36.026068</td><td>wBCft9kqnZ81rz76jvEu</td></tr><tr><td>present</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:35.726000+00:00</td><td>2026-03-27T14:07:35.911956</td><td>ttdrRPeaWm7T189qsxNW</td></tr><tr><td>absent</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:35.626000+00:00</td><td>2026-03-27T14:07:35.805186</td><td>vMzxBy87Z5VbfP1MGkvb</td></tr><tr><td>present</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:35.497000+00:00</td><td>2026-03-27T14:07:35.690104</td><td>7dLBsRqnVIkr8BzBBuf9</td></tr><tr><td>absent</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:35.272000+00:00</td><td>2026-03-27T14:07:35.458209</td><td>2QTemE7coN7Su2QZ60G9</td></tr><tr><td>present</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:35.046000+00:00</td><td>2026-03-27T14:07:35.221107</td><td>Qhzw8KXeXjvkrGAqhTyd</td></tr><tr><td>absent</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:34.761000+00:00</td><td>2026-03-27T14:07:34.941216</td><td>bt2IWa1HKWAAulBT75Rz</td></tr><tr><td>present</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:34.631000+00:00</td><td>2026-03-27T14:07:34.805499</td><td>PNdx2JtXi2oPWIFeOily</td></tr><tr><td>absent</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:34.445000+00:00</td><td>2026-03-27T14:07:34.618452</td><td>e1gTlHxE2awpMFVBJSue</td></tr><tr><td>present</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:34.291000+00:00</td><td>2026-03-27T14:07:34.492434</td><td>rp2zXS4ZFJvHqgEdWAcb</td></tr><tr><td>absent</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:34.142000+00:00</td><td>2026-03-27T14:07:34.336592</td><td>YXntiWxNgWqgH4YJBc3R</td></tr><tr><td>present</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:34.046000+00:00</td><td>2026-03-27T14:07:34.238571</td><td>CfhGDVYD97eGZ5c6q5mQ</td></tr><tr><td>absent</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:33.871000+00:00</td><td>2026-03-27T14:07:34.069141</td><td>vGrKyowpIhLGafegyQEe</td></tr><tr><td>present</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:33.758000+00:00</td><td>2026-03-27T14:07:33.958132</td><td>9RxE9NQAfWNNbgJ5PbJg</td></tr><tr><td>absent</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:33.572000+00:00</td><td>2026-03-27T14:07:33.770790</td><td>gBdiH16AMxbw0XykwPTs</td></tr><tr><td>present</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:33.457000+00:00</td><td>2026-03-27T14:07:33.649509</td><td>lEmkaZsseuKM1ppq195x</td></tr><tr><td>absent</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:33.275000+00:00</td><td>2026-03-27T14:07:33.460526</td><td>FNRGAYh4erE8R6rMKZti</td></tr><tr><td>present</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:33.118000+00:00</td><td>2026-03-27T14:07:33.313301</td><td>O0v2fO4rhyojfvR4pFQ6</td></tr><tr><td>absent</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:32.871000+00:00</td><td>2026-03-27T14:07:33.062171</td><td>ZNxCMCcxNUoRybKaCGrJ</td></tr><tr><td>present</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:32.691000+00:00</td><td>2026-03-27T14:07:32.880096</td><td>6GomKDEeuSQwI2WHNHYy</td></tr><tr><td>absent</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:32.327000+00:00</td><td>2026-03-27T14:07:32.512933</td><td>sicayvf9TNC7Uu7ZdtaH</td></tr><tr><td>present</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:31.646000+00:00</td><td>2026-03-27T14:07:31.846695</td><td>Go4s9iAy5sWePIkMuNlX</td></tr><tr><td>absent</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:29.356000+00:00</td><td>2026-03-27T14:07:29.479268</td><td>fY8EYYs4tTmin037RynI</td></tr><tr><td>present</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:26.476000+00:00</td><td>2026-03-27T14:07:26.592073</td><td>R8zSjmq3VCLnnF6WvdAc</td></tr><tr><td>absent</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:10.881000+00:00</td><td>2026-03-27T14:07:11.005425</td><td>T9EwuyRbB3cxc4CU9Ae1</td></tr><tr><td>present</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:00.643000+00:00</td><td>2026-03-27T14:07:00.820636</td><td>WTKGtcB9a4WUaqdP197w</td></tr><tr><td>absent</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:00.377000+00:00</td><td>2026-03-27T14:07:00.573604</td><td>KIzlmxYBvHi7zR6p6Fbo</td></tr><tr><td>present</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:00.281000+00:00</td><td>2026-03-27T14:07:00.483062</td><td>0C42T702XYNsM0QKBmuk</td></tr><tr><td>absent</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:37:00.117000+00:00</td><td>2026-03-27T14:07:00.295625</td><td>zsDBu6tALjpdDPznIFhB</td></tr><tr><td>present</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:36:59.937000+00:00</td><td>2026-03-27T14:07:00.135079</td><td>pHbtrZqfGtvA4NOnJb1L</td></tr><tr><td>absent</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:36:59.762000+00:00</td><td>2026-03-27T14:06:59.960938</td><td>qgcVlQj63E5OBlqCmdnP</td></tr><tr><td>present</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:36:59.662000+00:00</td><td>2026-03-27T14:06:59.849824</td><td>60lniAHhK2ZgXABlNiKr</td></tr><tr><td>absent</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:36:59.491000+00:00</td><td>2026-03-27T14:06:59.693200</td><td>hgm3RKa76NlVDobV9moD</td></tr><tr><td>present</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:36:59.360000+00:00</td><td>2026-03-27T14:06:59.556905</td><td>qBeJM4dWJgRtkEk6d7RI</td></tr><tr><td>absent</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:36:59.157000+00:00</td><td>2026-03-27T14:06:59.352377</td><td>At7RvYgaKb1WC5uO7iFa</td></tr><tr><td>present</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:36:59.036000+00:00</td><td>2026-03-27T14:06:59.239026</td><td>yQeZj5pM2ZpSIDGJcwHe</td></tr><tr><td>absent</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:36:58.891000+00:00</td><td>2026-03-27T14:06:59.083008</td><td>SBXdW7BiTLGRGrCgSoFZ</td></tr><tr><td>present</td><td>MANUAL_ENTRY</td><td>2026-03-27 08:36:58.797000+00:00</td><td>2026-03-27T14:06:58.991855</td><td>fvTdZSOAs9bRfsl9d7Q4</td></tr></tbody></table>
+            </div>
+            
+            <footer>
+                <p>Med Monitor IoT System • Firebase Data Export</p>
+                <p>Data automatically synced from Firebase Firestore</p>
+            </footer>
+        </div>
+    </body>
+    </html>
+    
